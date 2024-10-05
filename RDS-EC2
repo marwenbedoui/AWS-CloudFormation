@@ -1,0 +1,70 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Déploiement d'une application web avec EC2 et RDS
+
+Resources:
+
+  # Groupe de sécurité pour le serveur EC2
+  WebServerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Autoriser le trafic HTTP et SSH
+      VpcId: !Ref VPCId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0  # Autoriser le trafic HTTP de n'importe où
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 192.168.0.0/24  # Autoriser le trafic SSH depuis le réseau local
+
+  # Instance EC2
+  WebServer:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: ami-12345678  # Remplacez par l'AMI appropriée
+      KeyName: MyKeyPair
+      SecurityGroupIds:
+        - !Ref WebServerSecurityGroup
+      SubnetId: !Ref SubnetId
+
+  # Groupe de sécurité pour la base de données RDS
+  DatabaseSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Autoriser le trafic de la base de données
+      VpcId: !Ref VPCId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3306
+          ToPort: 3306
+          SourceSecurityGroupId: !Ref WebServerSecurityGroup  # Autoriser l'accès depuis le serveur web
+
+  # Instance de base de données RDS
+  MyDatabase:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceClass: db.t2.micro
+      Engine: MySQL
+      MasterUsername: admin
+      MasterUserPassword: !Ref DBPassword  # Mot de passe passé en tant que paramètre
+      DBInstanceIdentifier: MyDatabase
+      AllocatedStorage: 20
+      VPCSecurityGroups:
+        - !Ref DatabaseSecurityGroup
+
+Parameters:
+  VPCId:
+    Type: AWS::EC2::VPC::Id
+    Description: ID de votre VPC
+
+  SubnetId:
+    Type: AWS::EC2::Subnet::Id
+    Description: ID de votre sous-réseau
+
+  DBPassword:
+    Type: String
+    NoEcho: true
+    Description: Mot de passe pour l'utilisateur administrateur de la base de données
