@@ -1,1 +1,3 @@
 # AWS-CloudFormation
+
+AWS CloudFormation est un service qui vous aide à modéliser et à configurer vos AWS ressources afin que vous puissiez passer moins de temps à les gérer et plus de temps à vous concentrer sur les applications qui s'exécutent AWS. Vous créez un modèle qui décrit toutes les AWS ressources que vous souhaitez (comme les EC2 instances Amazon ou les instances de base de RDS données Amazon), et vous vous CloudFormation occupez du provisionnement et de la configuration de ces ressources pour vous. Vous n'avez pas besoin de créer et de configurer AWS des ressources individuellement et de déterminer ce qui dépend de quoi ; il CloudFormation gère tout cela. Les scénarios suivants montrent comment CloudFormation vous pouvez vous aider.
